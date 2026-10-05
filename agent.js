@@ -168,17 +168,27 @@ async function runAgent() {
     // ----------------------------------------
     // TOOL #2
     // ----------------------------------------
+let proof;
 
-    const proof = calculateProof(
-      challenge.nonce,
-      email
-    );
+if (attempts === 1) {
 
-    console.log("\n🤖 Agent now has a proof:");
+  console.log(
+    "\n🤖 Agent is using its first approach."
+  );
 
-    console.log(proof);
+  proof = "THIS-PROOF-IS-WRONG";
 
+} else {
 
+  console.log(
+    "\n🤖 Agent is changing its approach."
+  );
+
+  proof = calculateProof(
+    challenge.nonce,
+    email
+  );
+}
     // ----------------------------------------
     // TOOL #3
     // ----------------------------------------
@@ -218,6 +228,30 @@ async function runAgent() {
       console.log(
         "The application failed."
       );
+
+
+      // ----------------------------------------
+      // AGENT CHECKS THE ERROR
+      // ----------------------------------------
+
+      if (result.data.error === "Invalid proof") {
+
+        console.log(
+          "The proof was invalid. I need to calculate it again."
+        );
+
+      } else {
+
+        console.log(
+          "I received an unexpected error."
+        );
+
+      }
+
+
+      // ----------------------------------------
+      // CHECK WHETHER WE SHOULD RETRY
+      // ----------------------------------------
 
       if (attempts < maxAttempts) {
 
