@@ -128,53 +128,117 @@ plan.forEach((step, index) => {
 
 async function runAgent() {
 
+  let attempts = 0;
+
+  const maxAttempts = 3;
+
+  const email = "student@example.com";
+
   console.log("\n🤖 Agent decision:");
 
   console.log(
     "I need to get a challenge before I can submit the application."
   );
 
-  const email = "student@example.com";
-
 
   // ----------------------------------------
-  // TOOL #1
+  // AGENT RETRY LOOP
   // ----------------------------------------
 
-  const challenge = await getChallenge(email);
+  while (attempts < maxAttempts) {
 
-  console.log("\n🤖 Agent received challenge:");
+    attempts++;
 
-  console.log(challenge);
-
-
-  // ----------------------------------------
-  // TOOL #2
-  // ----------------------------------------
-
-  const proof = calculateProof(
-    challenge.nonce,
-    email
-  );
-
-  console.log("\n🤖 Agent now has a proof:");
-
-  console.log(proof);
+    console.log(
+      `\n🤖 Agent attempt ${attempts} of ${maxAttempts}`
+    );
 
 
-  // ----------------------------------------
-  // TOOL #3
-  // ----------------------------------------
+    // ----------------------------------------
+    // TOOL #1
+    // ----------------------------------------
 
-  const result = await submitApplication(
-    challenge.token,
-    proof,
-    email
-  );
+    const challenge = await getChallenge(email);
 
-  console.log("\n🤖 Agent received final result:");
+    console.log("\n🤖 Agent received challenge:");
 
-  console.log(result);
+    console.log(challenge);
+
+
+    // ----------------------------------------
+    // TOOL #2
+    // ----------------------------------------
+
+    const proof = calculateProof(
+      challenge.nonce,
+      email
+    );
+
+    console.log("\n🤖 Agent now has a proof:");
+
+    console.log(proof);
+
+
+    // ----------------------------------------
+    // TOOL #3
+    // ----------------------------------------
+
+    const result = await submitApplication(
+      challenge.token,
+      proof,
+      email
+    );
+
+    console.log("\n🤖 Agent received final result:");
+
+    console.log(result);
+
+
+    // ----------------------------------------
+    // AGENT EVALUATES RESULT
+    // ----------------------------------------
+
+    if (
+      result.status === 200 &&
+      result.data.success === true
+    ) {
+
+      console.log("\n🤖 Agent decision:");
+
+      console.log(
+        "The application was successful. My goal is complete!"
+      );
+
+      break;
+
+    } else {
+
+      console.log("\n🤖 Agent decision:");
+
+      console.log(
+        "The application failed."
+      );
+
+      if (attempts < maxAttempts) {
+
+        console.log(
+          "I will try again."
+        );
+
+      } else {
+
+        console.log(
+          "I reached the maximum number of attempts."
+        );
+
+      }
+    }
+  }
 }
+
+
+// ----------------------------------------
+// START THE AGENT
+// ----------------------------------------
 
 runAgent();
